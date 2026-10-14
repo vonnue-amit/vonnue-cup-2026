@@ -146,7 +146,7 @@
     if (kind === 'google') {
       const gB = googleXlsxUrl(CONFIG.googleSheet), gP = googleXlsxUrl(CONFIG.googleParticipantsSheet);
       const [b, p] = await Promise.all([fetchBuf(gB), (gP ? fetchBuf(gP) : fetchBuf(CONFIG.participants)).catch(() => null)]);
-      return { buf: b.buf, parts: p && p.buf, sig: signature(b.buf) + (p ? signature(p.buf) : ''), label: `Live from Google Sheets · checked for updates every ${refreshLabel}` };
+      return { buf: b.buf, parts: p && p.buf, sig: signature(b.buf) + (p ? signature(p.buf) : ''), label: `Results update automatically every ${refreshLabel}` };
     }
     if (kind === 'file') {
       const [b, p] = await Promise.all([fetchBuf(CONFIG.brackets), fetchBuf(CONFIG.participants).catch(() => null)]);
