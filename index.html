@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vonnue Cup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Live schedule, brackets and team standings for the Vonnue Cup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#home" aria-label="Vonnue Cup home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0z M7 6H4.5a2.5 2.5 0 0 0 2.6 3.6 M17 6h2.5a2.5 2.5 0 0 1-2.6 3.6 M12 13v3.5 M8.5 20h7l-.8-3.5h-5.4z"/></svg>
+        </span>
+        <span class="brand-word">Vonnue <b>Cup</b></span>
+      </a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#home" data-nav="home">Overview</a>
+        <a href="#schedule" data-nav="schedule">Schedule</a>
+        <a href="#brackets" data-nav="brackets">Brackets</a>
+        <a href="#standings" data-nav="standings">Standings</a>
+        <a href="#teams" data-nav="teams">Teams</a>
+      </nav>
+      <div class="top-actions">
+        <button class="search-btn" id="open-search" type="button" aria-label="Search players, teams and matches">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+          <span>Find a player</span>
+          <kbd>/</kbd>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch light or dark theme">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="view" class="view" tabindex="-1">
+    <section class="loading" aria-live="polite">
+      <div class="loading-mark"></div>
+      <p>Loading the tournament workbook…</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p id="data-status">Waiting for data.</p>
+      <label class="file-pick" for="file-input">
+        <input id="file-input" type="file" accept=".xlsx">
+        Open a newer workbook
+      </label>
+    </div>
+  </footer>
+</div>
+
+<div class="palette" id="palette" hidden>
+  <div class="palette-backdrop" data-close></div>
+  <div class="palette-box" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="palette-field">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input id="palette-input" type="search" placeholder="Player, team, event or match ID" autocomplete="off" spellcheck="false">
+      <kbd>Esc</kbd>
+    </div>
+    <ul id="palette-results" class="palette-results" role="listbox"></ul>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="config.js"></script>
+<script src="formula.js"></script>
+<script src="parser.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
