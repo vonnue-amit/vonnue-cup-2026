@@ -797,7 +797,6 @@
     try { localStorage.setItem('vc-theme', next); } catch (e) { /* storage unavailable */ }
   });
 
-  $('#file-input').addEventListener('change', onFilePick);
   document.addEventListener('error', (e) => {
     const img = e.target;
     if (img && img.tagName === 'IMG' && img.parentNode && (img.parentNode.classList.contains('has-logo') || img.parentNode.classList.contains('lineup-logo'))) {
