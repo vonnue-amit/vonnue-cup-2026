@@ -28,9 +28,7 @@ website/
    interval in `config.js` (2 minutes by default).
 
 If Google can't be reached, or the sheet stops looking like the Vonnue Cup workbook, the site falls
-back to `data/Vonnue_Cup_Knockout_Brackets.xlsx`, so keep a reasonably recent copy there. To check
-the Google version before switching over, use File → Download → Microsoft Excel in Google Sheets and
-open that file with the site's "Open a newer workbook" button.
+back to `data/Vonnue_Cup_Knockout_Brackets.xlsx`, so keep a reasonably recent copy there.
 
 Anyone with the sheet's link can read it, including the hidden helper columns; only you can edit.
 The private Claude preview page can't reach Google, so it keeps showing its snapshot.
@@ -76,7 +74,8 @@ A snapshot doesn't change on its own, so prefer serving the .xlsx where you can.
 
 ## Handy extras
 
-- **Open a newer workbook** (footer): preview any brackets file in your own browser without uploading it.
+- **Viewing a workbook file**: if the site can't load any data, its error page lets you pick a brackets
+  file and view it in your own browser, without uploading it.
 - **Search**: press `/` or `Ctrl K` to find a player, team, event or match ID.
 - **Testing a date**: add `?now=2026-10-19T19:25` to the URL to see the site as it would look at that
   moment, with live, upcoming and "result due" states.
