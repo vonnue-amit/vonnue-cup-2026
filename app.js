@@ -86,7 +86,7 @@
   }
   const statusPill = (s) => ({
     live: '<span class="pill live">Live</span>',
-    done: '<span class="pill done">Final</span>',
+    done: '<span class="pill done">Completed</span>',
     pending: '<span class="pill pending">Result due</span>',
     upcoming: '<span class="pill">Upcoming</span>',
   }[s]);
