@@ -124,9 +124,21 @@
           <span class="mid">${esc(m.id)}</span>
         </div>
         <div class="vs">${side(m.slots[0])}${m.score || m.isDraw ? `<span class="score">${esc([m.score, m.isDraw ? 'Draw' : ''].filter(Boolean).join(' · '))}</span>` : '<span class="sep">VS</span>'}${side(m.slots[1], true)}</div>
+        ${m.scorers ? scorerLine(m) : ''}
       </div>
       <div class="mend">${isFinal && st !== 'done' ? '<span class="pill gold">Final</span>' : statusPill(st)}<small>${icon('pin')} ${esc(m.venue || '')}</small></div>
     </div>`;
+  }
+
+  // Goal scorers under a football result, each on their team's side
+  function scorerLine(m) {
+    const ts = m.slots.map((s) => M.teamOf(m.event, s.name));
+    const list = (t, right) => {
+      const names = m.scorers.filter((s) => t && s.teamId === t.id)
+        .map((s) => esc(s.ownGoal ? 'Own goal' : s.player) + (s.goals > 1 ? ` ×${s.goals}` : '')).join(', ');
+      return `<span class="${right ? 'right' : ''} ${names ? '' : 'none'}" style="${tc(t)}"><i class="tdot"></i>${names}</span>`;
+    };
+    return `<div class="vs scorers">${list(ts[0])}<span class="ball">${icon('Football')}</span>${list(ts[1], true)}</div>`;
   }
 
   // ---------- data loading
@@ -446,6 +458,7 @@
 
     let body = '';
     if (ev.format === 'pools') body = poolsView(ev);
+    if (ev.scorers) body += topScorersView(ev);
     body += `<section>
       <div class="section-head"><h2>${ev.format === 'pools' ? 'Knockout' : 'Bracket'}</h2>
         <div class="legend"><span><i class="tdot" style="background:var(--good)"></i>Winner advances</span><span><span class="pill live" style="padding:1px 7px">Live</span></span><span>Hover a name to trace their path</span></div></div>
@@ -466,13 +479,25 @@
       <div class="pools">${pools.map(([p, rows]) => {
         const ms = ev.matches.filter((m) => m.pool === p || m.round === 'Pool ' + p);
         const complete = ms.length && ms.every((m) => m.winner || m.isDraw);
+        const goals = rows.length && rows[0].gd != null;
+        const gd = (n) => (n > 0 ? '+' + n : n < 0 ? '−' + -n : '0');
         return `<div class="panel pool"><h3>Pool ${p}</h3>
-          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Team</th><th class="c">P</th><th class="c">W</th><th class="c">D</th><th class="c">L</th><th class="c">Pts</th></tr></thead>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Team</th><th class="c">P</th><th class="c">W</th><th class="c">D</th><th class="c">L</th>${goals ? '<th class="c" title="Goal difference">GD</th>' : ''}<th class="c">Pts</th></tr></thead>
           <tbody>${rows.map((x, i) => { const t = team(x.teamId); return `<tr style="${tc(t)}"><td class="num">${x.played ? x.rank : '–'}</td>
             <td><a class="team-cell" href="#team-${x.teamId}">${crest(t)}<span>${esc(x.name)}</span>${complete && x.rank <= 2 ? ' <span class="q">Q</span>' : ''}</a></td>
-            <td class="c">${x.played}</td><td class="c">${x.won}</td><td class="c">${x.drawn}</td><td class="c">${x.lost}</td><td class="c pts">${x.points}</td></tr>`; }).join('')}</tbody></table></div>
+            <td class="c">${x.played}</td><td class="c">${x.won}</td><td class="c">${x.drawn}</td><td class="c">${x.lost}</td>${goals ? `<td class="c" title="${x.gf} scored, ${x.ga} conceded">${gd(x.gd)}</td>` : ''}<td class="c pts">${x.points}</td></tr>`; }).join('')}</tbody></table></div>
           <div class="list">${ms.map((m) => matchRow(m, { showDate: true })).join('')}</div></div>`;
       }).join('')}</div></section>`;
+  }
+
+  function topScorersView(ev) {
+    const rows = ev.scorers;
+    return `<section><div class="section-head"><h2>Top scorers</h2><p>Goals across the pools and knockout. Own goals are not counted.</p></div>
+      <div class="panel pool">${rows.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Player</th><th>Team</th><th class="c">Goals</th></tr></thead>
+        <tbody>${rows.map((x, i) => { const t = team(x.teamId); const rank = 1 + rows.findIndex((y) => y.goals === x.goals);
+          return `<tr style="${tc(t)}"><td class="num">${i && rows[i - 1].goals === x.goals ? '' : rank}</td><td><b>${esc(x.player)}</b></td>
+            <td>${t ? `<a class="team-cell" href="#team-${t.id}">${crest(t)}<span>${esc(t.name)}</span></a>` : ''}</td><td class="c pts">${x.goals}</td></tr>`; }).join('')}</tbody></table></div>`
+        : '<div class="empty">No goals yet.</div>'}</div></section>`;
   }
 
   // Bracket geometry: leaves (entries) are spaced evenly; each match sits at the mean of its two inputs.
