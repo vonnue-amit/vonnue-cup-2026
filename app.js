@@ -466,11 +466,13 @@
       <div class="pools">${pools.map(([p, rows]) => {
         const ms = ev.matches.filter((m) => m.pool === p || m.round === 'Pool ' + p);
         const complete = ms.length && ms.every((m) => m.winner || m.isDraw);
+        const goals = rows.length && rows[0].gd != null;
+        const gd = (n) => (n > 0 ? '+' + n : n < 0 ? '−' + -n : '0');
         return `<div class="panel pool"><h3>Pool ${p}</h3>
-          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Team</th><th class="c">P</th><th class="c">W</th><th class="c">D</th><th class="c">L</th><th class="c">Pts</th></tr></thead>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Team</th><th class="c">P</th><th class="c">W</th><th class="c">D</th><th class="c">L</th>${goals ? '<th class="c" title="Goal difference">GD</th>' : ''}<th class="c">Pts</th></tr></thead>
           <tbody>${rows.map((x, i) => { const t = team(x.teamId); return `<tr style="${tc(t)}"><td class="num">${x.played ? x.rank : '–'}</td>
             <td><a class="team-cell" href="#team-${x.teamId}">${crest(t)}<span>${esc(x.name)}</span>${complete && x.rank <= 2 ? ' <span class="q">Q</span>' : ''}</a></td>
-            <td class="c">${x.played}</td><td class="c">${x.won}</td><td class="c">${x.drawn}</td><td class="c">${x.lost}</td><td class="c pts">${x.points}</td></tr>`; }).join('')}</tbody></table></div>
+            <td class="c">${x.played}</td><td class="c">${x.won}</td><td class="c">${x.drawn}</td><td class="c">${x.lost}</td>${goals ? `<td class="c" title="${x.gf} scored, ${x.ga} conceded">${gd(x.gd)}</td>` : ''}<td class="c pts">${x.points}</td></tr>`; }).join('')}</tbody></table></div>
           <div class="list">${ms.map((m) => matchRow(m, { showDate: true })).join('')}</div></div>`;
       }).join('')}</div></section>`;
   }

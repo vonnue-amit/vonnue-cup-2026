@@ -235,6 +235,20 @@
           }
         }
       });
+      // Football goals for / against, from scores written like "2-1" (Team 1's goals first)
+      if (ev.sport === 'Football') {
+        Object.values(ev.pools).forEach((p) => p.forEach((x) => { x.gf = 0; x.ga = 0; }));
+        const rowOf = {};
+        Object.values(ev.pools).forEach((p) => p.forEach((x) => { rowOf[x.name] = x; }));
+        ev.matches.forEach((m) => {
+          const g = m.pool && m.score && m.score.match(/^\s*(\d+)\s*[-–—:]\s*(\d+)/);
+          if (!g) return;
+          const [a, b] = m.slots.map((s) => rowOf[s.name]);
+          if (a) { a.gf += +g[1]; a.ga += +g[2]; }
+          if (b) { b.gf += +g[2]; b.ga += +g[1]; }
+        });
+        Object.values(ev.pools).forEach((p) => p.forEach((x) => { x.gd = x.gf - x.ga; }));
+      }
       Object.values(ev.pools).forEach((p) => p.sort((x, y) => (x.rank || 9) - (y.rank || 9) || y.points - x.points));
       // Pool-stage seed labels for the knockout (e.g. a tie still to be resolved)
       ev.tieNotice = matches.some((m) => m.event === ev.name && m.slots.some((s) => /^Tie\b/.test(s.label || '')));
