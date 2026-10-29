@@ -11,6 +11,7 @@
     googleParticipantsSheet: USER.googleParticipantsSheet || '',
     year: USER.year || 2026,
     refreshMs: (USER.refreshMinutes || 2) * 60 * 1000,
+    liveScores: USER.liveScores || {},
   };
   const refreshLabel = `${CONFIG.refreshMs / 60000} minute${CONFIG.refreshMs === 60000 ? '' : 's'}`;
 
@@ -58,6 +59,7 @@
     users: '<circle cx="9" cy="8.5" r="3.3"/><path d="M3 19.5c.6-3.3 3-5 6-5s5.4 1.7 6 5M15.5 5.6a3.2 3.2 0 0 1 0 6M17.5 14.6c1.9.6 3.1 2.2 3.5 4.9"/>',
     pin: '<path d="M12 21s-6.5-6.1-6.5-11a6.5 6.5 0 0 1 13 0c0 4.9-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
     clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    external: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   };
   const icon = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k] || ICONS.trophy}</svg>`;
   const SPORTS = ['Chess', 'Carrom', 'Table Tennis', 'Badminton', 'Cricket', 'Football'];
@@ -350,8 +352,12 @@
     </div>`;
   }
 
+  // Link to another site that scores this event live, if config.js has one for its sport
+  const liveUrl = (ev) => { const u = CONFIG.liveScores[ev.sport]; return /^https?:\/\//.test(u || '') ? u : null; };
+
   function eventCard(e, i) {
     const t = now();
+    const live = liveUrl(e);
     const champTeam = e.champion && M.teamOf(e.name, e.champion);
     const st = e.champion ? 'Decided' : e.played > 0 || (e.startAt && t >= e.startAt) ? 'In progress' : 'Starts ' + (e.startAt ? shortDate(e.startAt) : e.starts);
     const pct = e.matches.length ? (e.played / e.matches.length) * 100 : 0;
@@ -360,6 +366,7 @@
         <span class="ev-name"><b>${esc(e.name)}</b><small>${e.format === 'pools' ? '2 pools of 3 + knockout' : plural(e.entries, 'entry', 'entries')}${e.byes ? ` · ${plural(e.byes, 'bye')}` : ''}</small></span></div>
       ${e.champion ? `<div class="ev-champ" style="${tc(champTeam)}">${icon('trophy')}<span>${esc(e.champion)}</span>${champTeam ? `<i class="tdot" style="margin-left:auto"></i>` : ''}</div>` : `<div class="progress"><i style="width:${pct}%"></i></div>`}
       <div class="ev-foot"><span>${esc(st)}</span><span class="num">${e.played}/${e.matches.length} played</span></div>
+      ${live ? `<span class="ev-live" role="link" tabindex="0" data-ext="${esc(live)}">${icon('external')}Live scores</span>` : ''}
     </a>`;
   }
 
@@ -452,7 +459,8 @@
           <span class="chip">${icon('calendar')}${esc(fdates)}</span>
           <span class="chip">${icon('pin')}${esc(venues)}</span>
           <span class="chip">${ev.played}/${ev.matches.length} played</span>
-        </div></div>
+        </div>
+        ${liveUrl(ev) ? `<a class="live-btn" href="${esc(liveUrl(ev))}" target="_blank" rel="noopener">Live scores ${icon('external')}</a>` : ''}</div>
       ${podium}
     </section>`;
 
@@ -751,6 +759,12 @@
       $('#f-done').addEventListener('change', (e) => { state.hideDone = e.target.checked; redraw(); });
     }
     view.querySelectorAll('[data-team-filter]').forEach((a) => a.addEventListener('click', () => { state.team = a.dataset.teamFilter; }));
+    // "Live scores" inside an event card: open the other site instead of following the card's own link
+    view.querySelectorAll('[data-ext]').forEach((el) => {
+      const go = (e) => { e.preventDefault(); e.stopPropagation(); window.open(el.dataset.ext, '_blank', 'noopener'); };
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') go(e); });
+    });
     const br = view.querySelector('.bracket');
     if (br) {
       br.addEventListener('mouseover', (e) => {

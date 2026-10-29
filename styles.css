@@ -390,7 +390,17 @@ a.board-row:hover { background: var(--surface-2); }
 .ev-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; padding: 24px; }
 .ev-hero h2 { font-family: var(--font-display); font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 900; text-transform: uppercase; line-height: 0.9; }
 .ev-hero .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-@media (max-width: 760px) { .ev-hero { grid-template-columns: 1fr; } }
+.live-btn {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 9px 16px; border-radius: 999px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: var(--step--1); white-space: nowrap;
+  transition: filter .15s, transform .15s;
+}
+.live-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.live-btn svg { font-size: 15px; }
+.ev-live { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; color: var(--accent); font-weight: 600; font-size: var(--step--1); cursor: pointer; }
+.ev-live:hover { text-decoration: underline; }
+.ev-live svg { font-size: 14px; }
+@media (max-width: 760px) { .ev-hero { grid-template-columns: 1fr; } .live-btn { display: flex; justify-content: center; } }
 
 .podium { display: grid; grid-template-columns: repeat(3, minmax(0, 116px)); gap: 8px; align-items: end; }
 .pod { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; min-width: 0; }
