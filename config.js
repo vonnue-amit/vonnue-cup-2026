@@ -18,4 +18,10 @@ window.VONNUE_CONFIG = {
 
   // How often open pages check for new results, in minutes
   refreshMinutes: 2,
+
+  // Sports scored live on another site. Each gets a "Live scores" button; leave a link empty to hide it.
+  liveScores: {
+    Cricket: 'https://chshare.link/tournament/gelGGE',
+    Badminton: 'https://vonnue-cup-badminton.netlify.app/',
+  },
 };
