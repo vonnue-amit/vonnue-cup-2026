@@ -366,7 +366,7 @@
         <span class="ev-name"><b>${esc(e.name)}</b><small>${e.format === 'pools' ? '2 pools of 3 + knockout' : plural(e.entries, 'entry', 'entries')}${e.byes ? ` · ${plural(e.byes, 'bye')}` : ''}</small></span></div>
       ${e.champion ? `<div class="ev-champ" style="${tc(champTeam)}">${icon('trophy')}<span>${esc(e.champion)}</span>${champTeam ? `<i class="tdot" style="margin-left:auto"></i>` : ''}</div>` : `<div class="progress"><i style="width:${pct}%"></i></div>`}
       <div class="ev-foot"><span>${esc(st)}</span><span class="num">${e.played}/${e.matches.length} played</span></div>
-      ${live ? `<span class="ev-live" role="link" tabindex="0" data-ext="${esc(live)}">${icon('external')}Live scores</span>` : ''}
+      ${live ? `<span class="ev-live" role="link" tabindex="0" data-ext="${esc(live)}">Live scores ${icon('external')}</span>` : ''}
     </a>`;
   }
 
