@@ -249,6 +249,31 @@
         });
         Object.values(ev.pools).forEach((p) => p.forEach((x) => { x.gd = x.gf - x.ga; }));
       }
+      // Optional "Football Scorers" sheet: one row per scorer per match (Match ID, Team, Player, Goals)
+      const sc = ev.sport === 'Football' && S('Football Scorers');
+      if (sc) {
+        ev.scorers = [];
+        const tally = {};
+        let h = null;
+        sheetRows(XLSX, sc).forEach((row) => {
+          if (row[0].v === 'Match ID') { h = {}; row.forEach((c, i) => { if (typeof c.v === 'string') h[c.v] = i; }); return; }
+          const g = (k) => (h && h[k] != null ? row[h[k]].v : null);
+          const m = h && matchById[g('Match ID')];
+          const player = g('Player');
+          if (!m || m.event !== ev.name || !player) return;
+          const goals = g('Goals') == null || g('Goals') === '' ? 1 : +g('Goals');
+          if (!(goals > 0)) return;
+          const tv = g('Team') == null ? '' : String(g('Team'));
+          const tm = tv.match(TEAM_RE);
+          const t = tm ? teamById[+tm[1]] : teamByName[tv.toLowerCase()];
+          const s = { player: String(player), teamId: t ? t.id : null, goals, ownGoal: /^own goal/i.test(player) };
+          (m.scorers = m.scorers || []).push(s);
+          if (s.ownGoal) return;
+          const key = s.player.toLowerCase() + '|' + s.teamId;
+          (tally[key] = tally[key] || { player: s.player, teamId: s.teamId, goals: 0 }).goals += goals;
+        });
+        ev.scorers = Object.values(tally).sort((a, b) => b.goals - a.goals || a.player.localeCompare(b.player));
+      }
       Object.values(ev.pools).forEach((p) => p.sort((x, y) => (x.rank || 9) - (y.rank || 9) || y.points - x.points));
       // Pool-stage seed labels for the knockout (e.g. a tie still to be resolved)
       ev.tieNotice = matches.some((m) => m.event === ev.name && m.slots.some((s) => /^Tie\b/.test(s.label || '')));
