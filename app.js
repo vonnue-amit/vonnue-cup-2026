@@ -291,7 +291,8 @@
     const daysLeft = span.last ? Math.max(0, Math.ceil((dateOfKey(keyOf(span.last)) - dateOfKey(keyOf(t))) / 864e5)) : 0;
     const started = span.first && t >= span.first;
 
-    const countdown = nextOne && !live.length ? `<div class="countdown" id="countdown" data-at="${nextOne.startAt.getTime()}">
+    // An untimed match today starts at midnight, so only count down to times still ahead
+    const countdown = nextOne && !live.length && nextOne.startAt > t ? `<div class="countdown" id="countdown" data-at="${nextOne.startAt.getTime()}">
         <div><b data-u="d">0</b><small>Days</small></div><div><b data-u="h">0</b><small>Hours</small></div>
         <div><b data-u="m">0</b><small>Min</small></div><div><b data-u="s">0</b><small>Sec</small></div></div>` : '';
     const nextHead = live.length ? `<span class="pill live">${plural(live.length, 'match', 'matches')} live</span>`
@@ -743,9 +744,9 @@
         const d = Math.floor(s / 86400); s -= d * 86400; const h = Math.floor(s / 3600); s -= h * 3600; const m = Math.floor(s / 60); s -= m * 60;
         const set = (u, v) => { const el = cd.querySelector(`[data-u="${u}"]`); if (el) el.textContent = String(v).padStart(u === 'd' ? 1 : 2, '0'); };
         set('d', d); set('h', h); set('m', m); set('s', s);
-        if (at - now() <= 0) { clearInterval(countdownTimer); render(true); }
+        if (at - now() <= 0) { clearInterval(countdownTimer); if (!first) render(true); }
       };
-      tick(); countdownTimer = setInterval(tick, 1000);
+      let first = true; tick(); first = false; countdownTimer = setInterval(tick, 1000);
     }
     if (r.name === 'schedule') {
       const redraw = () => { $('#days').innerHTML = renderDays(groupDays(filteredMatches()), keyOf(now())); };
