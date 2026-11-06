@@ -114,7 +114,7 @@
       const cls = !s.name ? 'tbd' : m.winner ? (m.winner === s.name ? 'win' : 'lose') : '';
       return `<div class="side ${right ? 'right' : ''} ${cls}" style="${tc(t)}"><i class="tdot"></i><span title="${esc(slotLabel(s))}${t ? ' · ' + esc(t.name) : ''}">${esc(slotLabel(s))}</span></div>`;
     };
-    const timeTop = m.start && /^\d/.test(m.start) ? m.start : (m.start ? 'Then' : '—');
+    const timeTop = m.start && /^\d/.test(m.start) ? m.start : (m.start ? 'Then' : '');
     const timeSub = opts.showDate ? shortDate(m.startAt) : (m.end ? `to ${m.end}` : (m.start === 'follows' ? 'follows' : ''));
     const isFinal = m.round === 'Final';
     return `<div class="mrow ${st === 'live' ? 'is-live' : ''} ${isFinal ? 'is-final' : ''}" data-mid="${esc(m.id)}">
